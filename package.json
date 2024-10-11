@@ -4,9 +4,9 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy --minify",
-    "start": "node ./dist/src/index.js"
+   "dev": "tsx watch src/index.ts",
+   "start": "node ./dist/src/index.js",
+   "build": "tsc && tsc-alias"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.1",
