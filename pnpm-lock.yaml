@@ -24,11 +24,11 @@ dependencies:
     specifier: ^11.0.6
     version: 11.0.6
   drizzle-orm:
-    specifier: ^0.33.0
-    version: 0.33.0(@libsql/client@0.14.0)
+    specifier: ^0.34.1
+    version: 0.34.1(@libsql/client@0.14.0)
   drizzle-zod:
     specifier: ^0.5.1
-    version: 0.5.1(drizzle-orm@0.33.0)(zod@3.23.8)
+    version: 0.5.1(drizzle-orm@0.34.1)(zod@3.23.8)
   hono:
     specifier: ^4.6.3
     version: 4.6.3
@@ -59,8 +59,8 @@ devDependencies:
     specifier: ^7.0.3
     version: 7.0.3
   drizzle-kit:
-    specifier: ^0.24.2
-    version: 0.24.2
+    specifier: ^0.25.0
+    version: 0.25.0
   eslint:
     specifier: ^9.12.0
     version: 9.12.0
@@ -2284,8 +2284,8 @@ packages:
     engines: {node: '>=12'}
     dev: false
 
-  /drizzle-kit@0.24.2:
-    resolution: {integrity: sha512-nXOaTSFiuIaTMhS8WJC2d4EBeIcN9OSt2A2cyFbQYBAZbi7lRsVGJNqDpEwPqYfJz38yxbY/UtbvBBahBfnExQ==}
+  /drizzle-kit@0.25.0:
+    resolution: {integrity: sha512-Rcf0nYCAKizwjWQCY+d3zytyuTbDb81NcaPor+8NebESlUz1+9W3uGl0+r9FhU4Qal5Zv9j/7neXCSCe7DHzjA==}
     hasBin: true
     dependencies:
       '@drizzle-team/brocli': 0.10.1
@@ -2296,13 +2296,13 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm@0.33.0(@libsql/client@0.14.0):
-    resolution: {integrity: sha512-SHy72R2Rdkz0LEq0PSG/IdvnT3nGiWuRk+2tXZQ90GVq/XQhpCzu/EFT3V2rox+w8MlkBQxifF8pCStNYnERfA==}
+  /drizzle-orm@0.34.1(@libsql/client@0.14.0):
+    resolution: {integrity: sha512-t+zCwyWWt8xTqtYV4doE/xYmT7hpv1L8pQ66zddEz+3VWyedBBtctjMAp22mAJPfyWurRQXUJ1nrTtqLq+DqNA==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=3'
       '@electric-sql/pglite': '>=0.1.1'
-      '@libsql/client': '*'
+      '@libsql/client': '>=0.10.0'
       '@neondatabase/serverless': '>=0.1'
       '@op-engineering/op-sqlite': '>=2'
       '@opentelemetry/api': ^1.4.1
@@ -2388,13 +2388,13 @@ packages:
       '@libsql/client': 0.14.0
     dev: false
 
-  /drizzle-zod@0.5.1(drizzle-orm@0.33.0)(zod@3.23.8):
+  /drizzle-zod@0.5.1(drizzle-orm@0.34.1)(zod@3.23.8):
     resolution: {integrity: sha512-C/8bvzUH/zSnVfwdSibOgFjLhtDtbKYmkbPbUCq46QZyZCH6kODIMSOgZ8R7rVjoI+tCj3k06MRJMDqsIeoS4A==}
     peerDependencies:
       drizzle-orm: '>=0.23.13'
       zod: '*'
     dependencies:
-      drizzle-orm: 0.33.0(@libsql/client@0.14.0)
+      drizzle-orm: 0.34.1(@libsql/client@0.14.0)
       zod: 3.23.8
     dev: false
 

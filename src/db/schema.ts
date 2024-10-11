@@ -1,34 +1,26 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { int, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-export const tasks = sqliteTable("tasks", {
-  id: integer("id", { mode: "number" })
-    .primaryKey({ autoIncrement: true }),
-  name: text("name")
-    .notNull(),
-  done: integer("done", { mode: "boolean" })
-    .notNull()
-    .default(false),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .$defaultFn(() => new Date()),
-  updatedAt: integer("updated_at", { mode: "timestamp" })
-    .$defaultFn(() => new Date())
-    .$onUpdate(() => new Date()),
+
+export const usersTable = sqliteTable("users_table", {
+  id: int().primaryKey({ autoIncrement: true }),
+  name: text().notNull(),
+  email: text().notNull().unique(),
 });
 
-export const selectTasksSchema = createSelectSchema(tasks);
 
-export const insertTasksSchema = createInsertSchema(
-  tasks,
+export const selectUsersSchema = createSelectSchema(usersTable);
+
+export const insertUsersSchema = createInsertSchema(
+  usersTable,
   {
     name: schema => schema.name.min(1).max(500),
   },
 ).required({
-  done: true,
+  name: true,
+  email: true
 }).omit({
   id: true,
-  createdAt: true,
-  updatedAt: true,
 });
 
-export const patchTasksSchema = insertTasksSchema.partial();
+export const patchUsersSchema = insertUsersSchema.partial();

@@ -3,47 +3,47 @@ import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
 
-import { insertTasksSchema, patchTasksSchema, selectTasksSchema } from "@/db/schema";
+import { insertUsersSchema, patchUsersSchema, selectUsersSchema } from "@/db/schema";
 import { notFoundSchema } from "@/lib/constants";
 
-const tags = ["Tasks"];
+const tags = ["Users"];
 
 export const list = createRoute({
-  path: "/tasks",
+  path: "/users",
   method: "get",
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      z.array(selectTasksSchema),
-      "The list of tasks",
+      z.array(selectUsersSchema),
+      "The list of users",
     ),
   },
 });
 
 export const create = createRoute({
-  path: "/tasks",
+  path: "/users",
   method: "post",
   request: {
     body: jsonContentRequired(
-      insertTasksSchema,
-      "The task to create",
+      insertUsersSchema,
+      "The users to create",
     ),
   },
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      selectTasksSchema,
-      "The created task",
+      selectUsersSchema,
+      "The created user",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(insertTasksSchema),
+      createErrorSchema(insertUsersSchema),
       "The validation error(s)",
     ),
   },
 });
 
 export const getOne = createRoute({
-  path: "/tasks/{id}",
+  path: "/users/{id}",
   method: "get",
   request: {
     params: IdParamsSchema,
@@ -51,12 +51,12 @@ export const getOne = createRoute({
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      selectTasksSchema,
-      "The requested task",
+      selectUsersSchema,
+      "The requested user",
     ),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      "Task not found",
+      "User not found",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(IdParamsSchema),
@@ -66,27 +66,27 @@ export const getOne = createRoute({
 });
 
 export const patch = createRoute({
-  path: "/tasks/{id}",
+  path: "/users/{id}",
   method: "patch",
   request: {
     params: IdParamsSchema,
     body: jsonContentRequired(
-      patchTasksSchema,
-      "The task updates",
+      patchUsersSchema,
+      "The users updates",
     ),
   },
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      selectTasksSchema,
-      "The updated task",
+      selectUsersSchema,
+      "The updated user",
     ),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      "Task not found",
+      "User not found",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(patchTasksSchema)
+      createErrorSchema(patchUsersSchema)
         .or(createErrorSchema(IdParamsSchema)),
       "The validation error(s)",
     ),
@@ -94,7 +94,7 @@ export const patch = createRoute({
 });
 
 export const remove = createRoute({
-  path: "/tasks/{id}",
+  path: "/users/{id}",
   method: "delete",
   request: {
     params: IdParamsSchema,
@@ -102,11 +102,11 @@ export const remove = createRoute({
   tags,
   responses: {
     [HttpStatusCodes.NO_CONTENT]: {
-      description: "Task deleted",
+      description: "User deleted",
     },
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      "Task not found",
+      "User not found",
     ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(IdParamsSchema),
