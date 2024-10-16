@@ -3,8 +3,8 @@ import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
 
-import { insertUsersSchema, patchUsersSchema, selectUsersSchema } from "@/db/schema";
-import { notFoundSchema } from "@/lib/constants";
+import {  selectUsersSchema } from "@/db/schema";
+import { notFoundSchema, unAuthorizedSchema } from "@/lib/constants";
 
 const tags = ["Users"];
 
@@ -20,28 +20,6 @@ export const list = createRoute({
   },
 });
 
-export const create = createRoute({
-  path: "/users",
-  method: "post",
-  request: {
-    body: jsonContentRequired(
-      insertUsersSchema,
-      "The users to create",
-    ),
-  },
-  tags,
-  responses: {
-    [HttpStatusCodes.OK]: jsonContent(
-      selectUsersSchema,
-      "The created user",
-    ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(insertUsersSchema),
-      "The validation error(s)",
-    ),
-  },
-});
-
 export const getOne = createRoute({
   path: "/users/{id}",
   method: "get",
@@ -50,73 +28,56 @@ export const getOne = createRoute({
   },
   tags,
   responses: {
+   
     [HttpStatusCodes.OK]: jsonContent(
-      selectUsersSchema,
+      selectUsersSchema.omit({password: true}),
       "The requested user",
     ),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       notFoundSchema,
       "User not found",
     ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(IdParamsSchema),
-      "Invalid id error",
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      unAuthorizedSchema,
+      "not authorized for this request",
     ),
   },
 });
 
-export const patch = createRoute({
-  path: "/users/{id}",
-  method: "patch",
-  request: {
-    params: IdParamsSchema,
-    body: jsonContentRequired(
-      patchUsersSchema,
-      "The users updates",
-    ),
-  },
-  tags,
-  responses: {
-    [HttpStatusCodes.OK]: jsonContent(
-      selectUsersSchema,
-      "The updated user",
-    ),
-    [HttpStatusCodes.NOT_FOUND]: jsonContent(
-      notFoundSchema,
-      "User not found",
-    ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(patchUsersSchema)
-        .or(createErrorSchema(IdParamsSchema)),
-      "The validation error(s)",
-    ),
-  },
-});
+// export const patch = createRoute({
+//   path: "/users/{id}",
+//   method: "patch",
+//   request: {
+//     params: IdParamsSchema,
+//     body: jsonContentRequired(
+//       patchUsersSchema,
+//       "The users updates",
+//     ),
+//   },
+//   tags,
+//   responses: {
+//     [HttpStatusCodes.OK]: jsonContent(
+//       selectUsersSchema,
+//       "The updated user",
+//     ),
+//     [HttpStatusCodes.NOT_FOUND]: jsonContent(
+//       notFoundSchema,
+//       "User not found",
+//     ),
+//     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+//       createErrorSchema(patchUsersSchema)
+//         .or(createErrorSchema(IdParamsSchema)),
+//       "The validation error(s)",
+//     ),
+//     [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+//       unAuthorizedSchema,
+//       "not authorized for this request",
+//     ),
+//   },
+// });
 
-export const remove = createRoute({
-  path: "/users/{id}",
-  method: "delete",
-  request: {
-    params: IdParamsSchema,
-  },
-  tags,
-  responses: {
-    [HttpStatusCodes.NO_CONTENT]: {
-      description: "User deleted",
-    },
-    [HttpStatusCodes.NOT_FOUND]: jsonContent(
-      notFoundSchema,
-      "User not found",
-    ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(IdParamsSchema),
-      "Invalid id error",
-    ),
-  },
-});
+// export type PatchRoute = typeof patch;
+
 
 export type ListRoute = typeof list;
-export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
-export type PatchRoute = typeof patch;
-export type RemoveRoute = typeof remove;

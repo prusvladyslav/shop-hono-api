@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1728681734921,
+      "tag": "0000_thin_electro",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1729094493082,
+      "tag": "0001_flippant_stick",
+      "breakpoints": true
+    }
+  ]
+}

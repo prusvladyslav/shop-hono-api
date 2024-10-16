@@ -6,27 +6,44 @@ import type { AppRouteHandler } from "@/lib/types";
 
 import db from "@/db";
 import { usersTable } from "@/db/schema";
-import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from "@/lib/constants";
-
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from "./users.routes";
-
-export const list: AppRouteHandler<ListRoute> = async (c) => {
-  const users = await db.query.usersTable.findMany();
-  return c.json(users);
-};
-
-export const create: AppRouteHandler<CreateRoute> = async (c) => {
-  const user = c.req.valid("json");
-  const [inserted] = await db.insert(usersTable).values(user).returning();
-  return c.json(inserted, HttpStatusCodes.OK);
-};
+import { AUTH_TOKEN_COOKIE_NAME, ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from "@/lib/constants";
+import  {decode}  from 'hono/jwt'
+import type {  GetOneRoute,  } from "./users.routes";
+import { getCookie } from "hono/cookie";
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
   const { id } = c.req.valid("param");
+
+  const idCookie = getCookie(c, AUTH_TOKEN_COOKIE_NAME);
+
+  if (!idCookie) {
+    return c.json(
+      {
+      message: HttpStatusPhrases.UNAUTHORIZED,
+      },
+     HttpStatusCodes.UNAUTHORIZED)
+  }
+
+  const {payload} = decode(idCookie)
+
+  const jwtID = payload.id
+   
+  if (jwtID !== id) {
+    return c.json(
+      {
+        message: HttpStatusPhrases.UNAUTHORIZED,
+      },
+      HttpStatusCodes.UNAUTHORIZED,
+    );
+  }
+  
   const user = await db.query.usersTable.findFirst({
     where(fields, operators) {
       return operators.eq(fields.id, id);
     },
+    columns: {
+      password: false
+    }
   });
 
   if (!user) {
@@ -41,59 +58,66 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
   return c.json(user, HttpStatusCodes.OK);
 };
 
-export const patch: AppRouteHandler<PatchRoute> = async (c) => {
-  const { id } = c.req.valid("param");
-  const updates = c.req.valid("json");
+// export const patch: AppRouteHandler<PatchRoute> = async (c) => {
+//   const { id } = c.req.valid("param");
+//   const updates = c.req.valid("json");
 
-  if (Object.keys(updates).length === 0) {
-    return c.json(
-      {
-        success: false,
-        error: {
-          issues: [
-            {
-              code: ZOD_ERROR_CODES.INVALID_UPDATES,
-              path: [],
-              message: ZOD_ERROR_MESSAGES.NO_UPDATES,
-            },
-          ],
-          name: "ZodError",
-        },
-      },
-      HttpStatusCodes.UNPROCESSABLE_ENTITY,
-    );
-  }
+//   const idCookie = getCookie(c, AUTH_TOKEN_COOKIE_NAME);
 
-  const [user] = await db.update(usersTable)
-    .set(updates)
-    .where(eq(usersTable.id, id))
-    .returning();
+//   if (!idCookie) {
+//     return c.json(
+//       {
+//       message: HttpStatusPhrases.UNAUTHORIZED,
+//       },
+//      HttpStatusCodes.UNAUTHORIZED)
+//   }
 
-  if (!user) {
-    return c.json(
-      {
-        message: HttpStatusPhrases.NOT_FOUND,
-      },
-      HttpStatusCodes.NOT_FOUND,
-    );
-  }
+//   const {payload} = decode(idCookie)
 
-  return c.json(user, HttpStatusCodes.OK);
-};
+//   const jwtID = payload.id
+   
+//   if (jwtID !== id) {
+//     return c.json(
+//       {
+//         message: HttpStatusPhrases.UNAUTHORIZED,
+//       },
+//       HttpStatusCodes.UNAUTHORIZED,
+//     );
+//   }
 
-export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
-  const { id } = c.req.valid("param");
-  const result = await db.delete(usersTable)
-    .where(eq(usersTable.id, id));
+//   if (Object.keys(updates).length === 0) {
+//     return c.json(
+//       {
+//         success: false,
+//         error: {
+//           issues: [
+//             {
+//               code: ZOD_ERROR_CODES.INVALID_UPDATES,
+//               path: [],
+//               message: ZOD_ERROR_MESSAGES.NO_UPDATES,
+//             },
+//           ],
+//           name: "ZodError",
+//         },
+//       },
+//       HttpStatusCodes.UNPROCESSABLE_ENTITY,
+//     );
+//   }
 
-  if (result.rowsAffected === 0) {
-    return c.json(
-      {
-        message: HttpStatusPhrases.NOT_FOUND,
-      },
-      HttpStatusCodes.NOT_FOUND,
-    );
-  }
+//   const [user] = await db.update(usersTable)
+//     .set(updates)
+//     .where(eq(usersTable.id, id))
+//     .returning();
 
-  return c.body(null, HttpStatusCodes.NO_CONTENT);
-};
+//   if (!user) {
+//     return c.json(
+//       {
+//         message: HttpStatusPhrases.NOT_FOUND,
+//       },
+//       HttpStatusCodes.NOT_FOUND,
+//     );
+//   }
+
+//   return c.json(user, HttpStatusCodes.OK);
+// };
+
