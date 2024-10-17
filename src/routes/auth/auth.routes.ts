@@ -2,8 +2,9 @@ import { createRoute,  z  } from "@hono/zod-openapi";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { loginSchema } from "./schema";
-import { insertUsersSchema } from "@/db/schema";
+import { insertUsersSchema, selectUsersSchema } from "@/db/schema";
 import { createErrorSchema } from "stoker/openapi/schemas";
+import { notFoundSchema } from "@/lib/constants";
 
 const tags = ["Auth"];
 
@@ -66,6 +67,23 @@ export const logout = createRoute({
     },
   });
 
+ export const verify = createRoute({
+  path: "/auth/verify",
+  method: "get",
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+     selectUsersSchema.omit({password: true}),
+      "User is verified",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      "User not found/not verified",
+    ),
+  }
+ }) 
+
  export type LoginRoute = typeof login;
  export type CreateRoute = typeof create;
  export type LogoutRoute = typeof logout;
+ export type VerifyRoute = typeof verify;
