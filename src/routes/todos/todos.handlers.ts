@@ -4,30 +4,16 @@ import * as HttpStatusPhrases from "stoker/http-status-phrases";
 import type { AppRouteHandler } from "@/lib/types";
 
 import db from "@/db";
-import { AUTH_TOKEN_COOKIE_NAME} from "@/lib/constants";
-import  {decode}  from 'hono/jwt'
 import type {  CreateRoute, GetOneRoute, ListRoute,  } from "./todos.routes";
-import { getCookie } from "hono/cookie";
-import { insertTodosSchema, todosSchema } from "@/db/schema";
+import {  todosSchema } from "@/db/schema";
 
 export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
   const { id } = c.req.valid("param");
 
-  const idCookie = getCookie(c, AUTH_TOKEN_COOKIE_NAME);
-
-  if (!idCookie) {
-    return c.json(
-      {
-      message: HttpStatusPhrases.UNAUTHORIZED,
-      },
-     HttpStatusCodes.UNAUTHORIZED)
-  }
-
-  const {payload} = decode(idCookie)
-
-  const jwtID = payload.id
+  const session = c.get('session')
+  const userId = session.get('userId')
    
-  if (typeof jwtID !== "number") {
+  if (typeof userId !== "number") {
     return c.json(
       {
         message: HttpStatusPhrases.UNAUTHORIZED,
@@ -38,7 +24,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
   
   const todo = await db.query.todosSchema.findFirst({
     where(fields, operators) {
-      return operators.and(operators.eq(fields.id, id), operators.eq(fields.userId, jwtID));
+      return operators.and(operators.eq(fields.id, id), operators.eq(fields.userId, userId));
     },
   });
 
@@ -57,31 +43,20 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
     const todo = c.req.valid("json");
 
-    const idCookie = getCookie(c, AUTH_TOKEN_COOKIE_NAME);
-
-    if (!idCookie) {
+    const session = c.get('session')
+    const userId = session.get('userId')
+   
+    if (typeof userId !== "number") {
       return c.json(
         {
         message: HttpStatusPhrases.UNAUTHORIZED,
         },
-       HttpStatusCodes.UNAUTHORIZED)
-    }
-  
-    const {payload} = decode(idCookie)
-  
-    const jwtID = payload.id
-
-    if (!jwtID || typeof jwtID !== "number") {
-      return c.json(
-        {
-          message: HttpStatusPhrases.UNAUTHORIZED,
-        },
         HttpStatusCodes.UNAUTHORIZED,
-      );
-    }
+        );
+  }
 
 
-    const createdTodo = await db.insert(todosSchema).values({userId: jwtID, ...todo}).returning()
+    const createdTodo = await db.insert(todosSchema).values({userId, ...todo}).returning()
 
     return c.json(createdTodo, HttpStatusCodes.OK)
 
@@ -89,21 +64,10 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
 }
 export const list: AppRouteHandler<ListRoute> = async (c) => {
 
-  const idCookie = getCookie(c, AUTH_TOKEN_COOKIE_NAME);
-
-  if (!idCookie) {
-    return c.json(
-      {
-      message: HttpStatusPhrases.UNAUTHORIZED,
-      },
-     HttpStatusCodes.UNAUTHORIZED)
-  }
-
-  const {payload} = decode(idCookie)
-
-  const jwtID = payload.id
+  const session = c.get('session')
+  const userId = session.get('userId')
    
-  if (!jwtID || typeof jwtID !== "number") {
+  if (typeof userId !== "number") {
     return c.json(
       {
         message: HttpStatusPhrases.UNAUTHORIZED,
@@ -114,7 +78,7 @@ export const list: AppRouteHandler<ListRoute> = async (c) => {
   
   const todos = await db.query.todosSchema.findMany({
     where(fields, operators) {
-      return operators.eq(fields.userId, jwtID);
+      return operators.eq(fields.userId, userId);
     },
   });
 

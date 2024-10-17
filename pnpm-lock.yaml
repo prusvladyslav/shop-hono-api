@@ -35,6 +35,9 @@ dependencies:
   hono-pino:
     specifier: ^0.3.0
     version: 0.3.0(hono@4.6.3)(pino@9.4.0)
+  hono-sessions:
+    specifier: ^0.6.1
+    version: 0.6.1
   jsonwebtoken:
     specifier: ^9.0.2
     version: 9.0.2
@@ -3692,6 +3695,13 @@ packages:
       pino: 9.4.0
     dev: false
 
+  /hono-sessions@0.6.1:
+    resolution: {integrity: sha512-6twQbRJyuP/UDU73z8snkj3WX6roFuEor4YHOSgOjj9as8IIl7E8MPMJMb8kapOL8jYpiRXwOsHaLKTvQdKAKA==}
+    dependencies:
+      hono: 4.6.3
+      iron-webcrypto: 0.10.1
+    dev: false
+
   /hono@4.6.3:
     resolution: {integrity: sha512-0LeEuBNFeSHGqZ9sNVVgZjB1V5fmhkBSB0hZrpqStSMLOWgfLy0dHOvrjbJh0H2khsjet6rbHfWTHY0kpYThKQ==}
     engines: {node: '>=16.9.0'}
@@ -3731,6 +3741,10 @@ packages:
     resolution: {integrity: sha512-EdDDZu4A2OyIK7Lr/2zG+w5jmbuk1DVBnEwREQvBzspBJkCEbRa8GxU1lghYcaGJCnRWibjDXlq779X1/y5xwg==}
     engines: {node: '>=8'}
     dev: true
+
+  /iron-webcrypto@0.10.1:
+    resolution: {integrity: sha512-QGOS8MRMnj/UiOa+aMIgfyHcvkhqNUsUxb1XzskENvbo+rEfp6TOwqd1KPuDzXC4OnGHcMSVxDGRoilqB8ViqA==}
+    dev: false
 
   /is-arrayish@0.2.1:
     resolution: {integrity: sha512-zz06S8t0ozoDXMG+ube26zeCTNXcKIPJZJi8hBrF4idCLms4CG9QtK7qBl1boi5ODzFpjswb5JPmHCbMpjaYzg==}

@@ -28,6 +28,17 @@ export const login = createRoute({
     ),
 }
   })
+export const logout = createRoute({
+  path: "/auth/logout",
+  method: "get",
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      z.boolean(),
+      "Logged out",
+    ),
+}
+  })
 
   export const create = createRoute({
     path: "/auth/register",
@@ -57,3 +68,4 @@ export const login = createRoute({
 
  export type LoginRoute = typeof login;
  export type CreateRoute = typeof create;
+ export type LogoutRoute = typeof logout;

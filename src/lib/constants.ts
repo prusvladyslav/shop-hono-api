@@ -18,9 +18,9 @@ export const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key' as const
 
 export const cookieOptions = {
   path: '/',
-  secure: true,
-  maxAge: 60 * 60,
-  sameSite: 'Strict',
+  maxAge: 604_800,
+  httpOnly: false,
+  secure: false
 } as const
 
 export const AUTH_TOKEN_COOKIE_NAME = 'auth_token' as const

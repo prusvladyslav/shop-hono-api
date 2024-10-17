@@ -1,12 +1,9 @@
 import { AppRouteHandler } from "@/lib/types";
-import { CreateRoute, LoginRoute } from "./auth.routes";
+import { CreateRoute, LoginRoute, LogoutRoute } from "./auth.routes";
 import { and, eq } from "drizzle-orm";
 import { usersTable } from "@/db/schema";
 import db from "@/db";
 import * as HttpStatusCodes from "stoker/http-status-codes";
-import  {sign}  from 'hono/jwt'
-import {setSignedCookie} from 'hono/cookie'
-import { AUTH_TOKEN_COOKIE_NAME, cookieOptions, JWT_SECRET } from "@/lib/constants";
 
 
 export const login: AppRouteHandler<LoginRoute> = async (c) => {
@@ -21,14 +18,19 @@ export const login: AppRouteHandler<LoginRoute> = async (c) => {
     );
   }
 
-  const token = await sign({id: user.id},JWT_SECRET)
 
-  await setSignedCookie(c, AUTH_TOKEN_COOKIE_NAME, token, JWT_SECRET, cookieOptions)
-
+  let session = c.get('session')
+  session.set("userId", user.id)
+  
   return c.json(
     true,
     HttpStatusCodes.OK,
   );
+}
+
+export const logout: AppRouteHandler<LogoutRoute> = async (c) => {
+  c.get('session').deleteSession()
+  return c.json(true, HttpStatusCodes.OK)
 }
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
@@ -37,10 +39,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
     try {
 
     const id = await db.insert(usersTable).values(credentials).returning({id: usersTable.id});
-
-    const token = await sign({id},JWT_SECRET)
-    
-      await setSignedCookie(c, AUTH_TOKEN_COOKIE_NAME, token, JWT_SECRET, cookieOptions)
+    let session = c.get('session')
+    session.set("userId", id)
     } 
     catch (error) {
 
