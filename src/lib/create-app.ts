@@ -23,7 +23,7 @@ export default function createApp() {
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     exposeHeaders: ['Content-Length', 'X-Requested-With'],
-    origin: "http://127.0.0.1:5500",
+    origin: ["http://127.0.0.1:5500", "http://127.0.0.1:3000"],
     credentials: true
   }))
   app.use("*", sessionMiddleware({
