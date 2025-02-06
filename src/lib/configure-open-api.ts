@@ -9,7 +9,7 @@ export default function configureOpenAPI(app: AppOpenAPI) {
     openapi: "3.0.0",
     info: {
       version: packageJSON.version,
-      title: "Demo API",
+      title: "shop api",
     },
   });
 
@@ -25,6 +25,6 @@ export default function configureOpenAPI(app: AppOpenAPI) {
       spec: {
         url: "/doc",
       },
-    }),
+    })
   );
 }

@@ -13,6 +13,7 @@
     "@hono/zod-openapi": "^0.16.4",
     "@libsql/client": "^0.14.0",
     "@scalar/hono-api-reference": "^0.5.150",
+    "cloudflare": "^4.0.0",
     "dotenv": "^16.4.5",
     "dotenv-expand": "^11.0.6",
     "drizzle-orm": "^0.33.0",
