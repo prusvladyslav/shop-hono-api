@@ -16,6 +16,7 @@ export const selectCategoriesSchema = createSelectSchema(categories);
 
 export const insertCategoriesSchema = createInsertSchema(categories, {
   name: (schema) => schema.name.min(1).max(500),
+  parentId: (schema) => schema.parentId.min(1).max(500),
 })
   .required({ name: true })
   .omit({ id: true });
@@ -31,9 +32,13 @@ export const products = sqliteTable("products", {
   description: text("description"),
 });
 
-export const productsRelations = relations(products, ({ many }) => ({
+export const productsRelations = relations(products, ({ many, one }) => ({
   images: many(productsImages),
   reviews: many(productsReviews),
+  category: one(categories, {
+    fields: [products.categoryId],
+    references: [categories.id],
+  }),
 }));
 
 export const selectProductsSchema = createSelectSchema(products);
