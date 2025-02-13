@@ -24,12 +24,22 @@ export const getProductsHandler: AppRouteHandler<GetProductsRoute> = async (
           imageUrl: true,
         },
       },
+      reviews: {
+        columns: {
+          rating: true,
+        },
+      },
     },
   });
 
   const mappedProducts = products.map((product) => ({
     ...product,
     images: product.images.map((image) => image.imageUrl),
+    reviews: undefined,
+    rating:
+      product.reviews.reduce((acc, review) => acc + review.rating, 0) /
+      product.reviews.length,
+    reviewsCount: product.reviews.length,
   }));
 
   return c.json(mappedProducts, HttpStatusCodes.OK);
@@ -48,6 +58,11 @@ export const getProductHandler: AppRouteHandler<GetProductRoute> = async (
           imageUrl: true,
         },
       },
+      reviews: {
+        columns: {
+          rating: true,
+        },
+      },
     },
   });
 
@@ -60,10 +75,17 @@ export const getProductHandler: AppRouteHandler<GetProductRoute> = async (
     );
   }
 
-  return c.json(
-    { ...product, images: product.images.map((image) => image.imageUrl) },
-    HttpStatusCodes.OK
-  );
+  const mappedProduct = {
+    ...product,
+    reviews: undefined,
+    images: product.images.map((image) => image.imageUrl),
+    rating:
+      product.reviews.reduce((acc, review) => acc + review.rating, 0) /
+      product.reviews.length,
+    reviewsCount: product.reviews.length,
+  };
+
+  return c.json(mappedProduct, HttpStatusCodes.OK);
 };
 
 export const postProductHandler: AppRouteHandler<PostProductRoute> = async (

@@ -33,6 +33,7 @@ export const products = sqliteTable("products", {
 
 export const productsRelations = relations(products, ({ many }) => ({
   images: many(productsImages),
+  reviews: many(productsReviews),
 }));
 
 export const selectProductsSchema = createSelectSchema(products);
@@ -53,12 +54,47 @@ export const productsImages = sqliteTable("products_images", {
   imageUrl: text("imageUrl").notNull(),
 });
 
-export const productImages = relations(productsImages, ({ one }) => ({
+export const productImagesRelations = relations(productsImages, ({ one }) => ({
   product: one(products, {
     fields: [productsImages.productId],
     references: [products.id],
   }),
 }));
+
+export const productsReviews = sqliteTable("products_reviews", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  productId: integer("productId")
+    .notNull()
+    .references(() => products.id),
+  userId: integer("userId")
+    .notNull()
+    .references(() => users.id),
+  rating: integer("rating").notNull(),
+  comment: text("comment"),
+});
+
+export const insertReviewsSchema = createInsertSchema(productsReviews, {
+  productId: (schema) => schema.productId.min(1).max(500),
+  userId: (schema) => schema.userId.min(1).max(500),
+  rating: (schema) => schema.rating.min(0).max(5),
+  comment: (schema) => schema.comment.min(1).max(500),
+}).omit({ id: true });
+
+export const selectProductsReviewsSchema = createSelectSchema(productsReviews);
+
+export const productReviewsRelations = relations(
+  productsReviews,
+  ({ one }) => ({
+    product: one(products, {
+      fields: [productsReviews.productId],
+      references: [products.id],
+    }),
+    user: one(users, {
+      fields: [productsReviews.userId],
+      references: [users.id],
+    }),
+  })
+);
 
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -66,3 +102,7 @@ export const users = sqliteTable("users", {
   lastName: text("lastName").notNull(),
   email: text("email").notNull(),
 });
+
+export const usersRelations = relations(users, ({ many }) => ({
+  reviews: many(productsReviews),
+}));
